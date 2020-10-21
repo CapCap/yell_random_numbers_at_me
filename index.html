@@ -76,6 +76,7 @@
 
 		interval_time.onchange = ()=>{
 			if(started){
+				window.speechSynthesis.cancel()
 				clearInterval(interval);
 				startInterval();
 			}
@@ -87,6 +88,7 @@
 				clearInterval(interval);
 				start_btn.innerHTML = "start";
 				number_div.innerHTML = " ";
+				window.speechSynthesis.cancel()
 			} else {
 				started = true;
 				start_btn.innerHTML = "stop";
@@ -97,13 +99,19 @@
 
 		function startInterval(){
 			var time = parseFloat(interval_time.value || "2")*1000;
-			console.log(time)
 			interval = setInterval(()=>newNumber(), time);
 		}
 
+		function randomVoice(utterance){
+			var voices = window.speechSynthesis.getVoices();
+			var new_voice = voices[ Math.floor(Math.random() * voices.length) ];
+			utterance.voice = new_voice
+		}
+		
 		function speak(number){
 			var utterance = new SpeechSynthesisUtterance();
 			utterance.text = number;
+			// randomVoice(utterance);
 			window.speechSynthesis.speak(utterance);
 		}
 
