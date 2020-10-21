@@ -1,0 +1,131 @@
+<html>
+<head></head>
+
+<body style="text-align: center;width:100%">
+	<style>
+		#number{
+			font-size:260px;
+			min-width:300px;
+			height:300px;
+			border:1px solid blue;
+			display:inline-block;
+			margin-top:30px;
+		}
+		#inputs_holder {
+			text-align: left;
+			display:inline-block;
+			width: 200px;
+			padding: 5px;
+		}
+		#inputs_holder .input_row {
+			margin-top:5px;
+		}
+		#inputs_holder input {
+			max-width:100px;
+		}
+		#inputs_holder label {
+			text-align: left;
+			width:45px;
+			display:inline-block;
+		}
+		#inputs_holder input {
+			width: 60px;
+		}
+	</style>
+
+	<div id="number"> </div>
+	<br/>
+	<div id="inputs_holder" style="margin:20px 10px 0 10px;">
+		<div class="input_row">
+			<label for="from_number">From:</label>
+			<input type="number" id="from_number" name="from_number" value="1"/>
+		</div>
+		<div class="input_row">
+			<label for="to_number">To:</label>
+			<input type="number" id="to_number" name="to_number" value="8"/>
+		</div>
+		<div class="input_row">
+			<label for="interval_time">Time:</label>
+			<input type="number" id="interval_time" name="interval_time" value="2"/> seconds
+		</div>
+		<div class="input_row">
+			<label for="do_speak">Speak:</label>
+			<input type="checkbox" id="do_speak" name="do_speak" checked>
+		</div>
+		<div class="input_row" style="text-align: center">
+			<button id="start">start</button><br/>
+		</div>
+	</div>
+
+	<script>
+		/* Copyright Max Kaplan, 2020, I guess? */
+
+		var number_div = document.getElementById("number");
+		var start_btn = document.getElementById("start");
+		var from_number_input = document.getElementById("from_number");
+		var to_number_input = document.getElementById("to_number");
+		var do_speak_input = document.getElementById("do_speak");
+		var interval_time_input = document.getElementById("interval_time");
+		
+		var started = false;
+
+		var from_number = 1;
+		var to_number = 8;
+
+		var interval;
+
+		interval_time.onchange = ()=>{
+			if(started){
+				clearInterval(interval);
+				startInterval();
+			}
+		};
+
+		start_btn.onclick = ()=>{
+			if(started) {
+				started = false;
+				clearInterval(interval);
+				start_btn.innerHTML = "start";
+				number_div.innerHTML = " ";
+			} else {
+				started = true;
+				start_btn.innerHTML = "stop";
+				newNumber()
+				startInterval();
+			}
+		};
+
+		function startInterval(){
+			var time = parseFloat(interval_time.value || "2")*1000;
+			console.log(time)
+			interval = setInterval(()=>newNumber(), time);
+		}
+
+		function speak(number){
+			var utterance = new SpeechSynthesisUtterance();
+			utterance.text = number;
+			window.speechSynthesis.speak(utterance);
+		}
+
+		var previous_number = null;
+		function newNumber(){
+			var new_number = null;
+			from_number = parseInt(from_number_input.value);
+			to_number = parseInt(to_number_input.value);
+			if(from_number < 0) {
+				to_number += Math.abs(from_number);
+			}
+			while(new_number == null || new_number == previous_number){
+				new_number = from_number + Math.floor(Math.random() * to_number);
+			}
+			previous_number = new_number;
+			number_div.innerHTML = new_number;
+			if(do_speak_input.checked){
+				speak(new_number);
+			}
+		}
+
+	</script>
+</body>
+
+</html>
